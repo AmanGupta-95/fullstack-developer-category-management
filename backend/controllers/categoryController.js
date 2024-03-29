@@ -7,7 +7,7 @@ exports.getAllCategories = async (req, res) => {
       for (let category of categories) {
         //populating the children with value
         await category.populate('children');
-        if (category.children.length > 0) {
+        if (category.children.length) {
           // recursive call to populate the children at N levels
           await populateChildren(category.children);
         }
@@ -27,6 +27,13 @@ exports.getAllCategories = async (req, res) => {
 exports.addCategory = async (req, res) => {
   const { name, parentId } = req.body;
 
+  //checking name criteria
+  if (!name) {
+    return res
+      .status(400)
+      .json({ status: 'fail', message: 'name cannot be empty' });
+  }
+
   try {
     let newCategory;
     // if there is a parentId add the category id inside the parent children
@@ -37,13 +44,13 @@ exports.addCategory = async (req, res) => {
       if (!parentCategory) {
         return res.status(404).json({ message: 'Parent category not found' });
       }
+
       // creating the new category
       newCategory = new Category({ name, parent: parentCategory.id });
-      // adding the new category in the DB
       await newCategory.save();
+
       //pushing the new category id inside the parent children
       parentCategory.children.push(newCategory.id);
-      // saving the parent document
       await parentCategory.save();
     }
     // if there is not parent id create the category with no parent
@@ -60,6 +67,12 @@ exports.addCategory = async (req, res) => {
 
 exports.updateCategory = async (req, res) => {
   const updatedName = req.body.name;
+  //checking name criteria
+  if (!updatedName) {
+    return res
+      .status(400)
+      .json({ status: 'fail', message: 'name cannot be empty' });
+  }
   try {
     // finding the category and updating its name
     const updatedCategory = await Category.findByIdAndUpdate(
