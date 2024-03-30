@@ -16,31 +16,51 @@ function App() {
 
   const getAllCategories = () => {
     setIsLoading(true);
-    axios.get(apiUrl).then((res) => {
-      setCategories(res.data.data);
-      setIsLoading(false);
-    });
+    axios
+      .get(apiUrl)
+      .then((res) => {
+        setCategories(res.data.data);
+        setIsLoading(false);
+      })
+      .catch(() => {
+        setIsLoading(false);
+      });
   };
 
   const addNewCategory = (name, parentId) => {
     setIsLoading(true);
-    axios.post(apiUrl, { name, parentId }).then(() => {
-      getAllCategories();
-    });
+    axios
+      .post(apiUrl, { name, parentId })
+      .then(() => {
+        getAllCategories();
+      })
+      .catch(() => {
+        setIsLoading(false);
+      });
   };
 
   const updateCategory = (id, name) => {
     setIsLoading(true);
-    axios.patch(`${apiUrl}/${id}`, { name }).then(() => {
-      getAllCategories();
-    });
+    axios
+      .patch(`${apiUrl}/${id}`, { name })
+      .then(() => {
+        getAllCategories();
+      })
+      .catch(() => {
+        setIsLoading(false);
+      });
   };
 
   const deleteCategory = (id) => {
     setIsLoading(true);
-    axios.delete(`${apiUrl}/${id}`).then(() => {
-      getAllCategories();
-    });
+    axios
+      .delete(`${apiUrl}/${id}`)
+      .then(() => {
+        getAllCategories();
+      })
+      .catch(() => {
+        setIsLoading(false);
+      });
   };
 
   return (
@@ -54,6 +74,7 @@ function App() {
       ) : (
         <TreeView
           data={categories}
+          parentId={undefined}
           add={addNewCategory}
           update={updateCategory}
           remove={deleteCategory}

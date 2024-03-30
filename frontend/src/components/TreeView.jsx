@@ -22,7 +22,7 @@ function Node({ data, add, update, remove }) {
   };
 
   const addNewCategory = () => {
-    add(newCat, data.parent ? data.id : undefined);
+    add(newCat, data.id);
     setAddNew(false);
   };
 
@@ -60,31 +60,38 @@ function Node({ data, add, update, remove }) {
               {data.name}
             </p>
           )}
-          {!isEditable ? (
+          <div className="flex ml-1 gap-1">
+            {!isEditable ? (
+              <FontAwesomeIcon
+                icon={faPen}
+                className="cursor-pointer scale-75"
+                onClick={() => setIsEditable(true)}
+              />
+            ) : (
+              <>
+                <FontAwesomeIcon
+                  icon={faCheck}
+                  className="cursor-pointer scale-90"
+                  onClick={updateName}
+                />
+                <FontAwesomeIcon
+                  icon={faXmark}
+                  className="cursor-pointer scale-90"
+                  onClick={() => setIsEditable(false)}
+                />
+              </>
+            )}
             <FontAwesomeIcon
-              icon={faPen}
-              className="cursor-pointer scale-75 mx-1"
-              onClick={() => setIsEditable(true)}
+              icon={faPlus}
+              className="scale-75 cursor-pointer"
+              onClick={() => setAddNew(true)}
             />
-          ) : (
-            <>
-              <FontAwesomeIcon
-                icon={faCheck}
-                className="cursor-pointer scale-90 mx-1"
-                onClick={updateName}
-              />
-              <FontAwesomeIcon
-                icon={faXmark}
-                className="cursor-pointer scale-90 mr-1"
-                onClick={() => setIsEditable(false)}
-              />
-            </>
-          )}
-          <FontAwesomeIcon
-            icon={faTrash}
-            className="scale-75 cursor-pointer"
-            onClick={handleDelete}
-          />
+            <FontAwesomeIcon
+              icon={faTrash}
+              className="scale-75 cursor-pointer"
+              onClick={handleDelete}
+            />
+          </div>
         </div>
       </div>
       {addNew ? (
@@ -106,21 +113,34 @@ function Node({ data, add, update, remove }) {
             onClick={() => setAddNew(false)}
           />
         </>
-      ) : (
-        <div className="flex justify-center mt-2">
-          <FontAwesomeIcon
-            icon={faPlus}
-            className="cursor-pointer"
-            onClick={() => setAddNew(true)}
-          />
-        </div>
+      ) : // <div className="flex justify-center mt-2">
+      //   <FontAwesomeIcon
+      //     icon={faPlus}
+      //     className="cursor-pointer"
+      //     onClick={() => setAddNew(true)}
+      //   />
+      // </div>
+      null}
+      {isOpen && (
+        <TreeView
+          data={data.children}
+          parentId={data.parentId}
+          add={add}
+          update={update}
+          remove={remove}
+        />
       )}
-      {isOpen && <TreeView data={data.children} />}
     </div>
   );
 }
 
-function TreeView({ data, add, update, remove }) {
+function TreeView({ data, parentId, add, update, remove }) {
+  const [addNew, setAddNew] = useState(false);
+  const [newCat, setNewCat] = useState('');
+  const addNewCategory = () => {
+    add(newCat, parentId);
+    setAddNew(false);
+  };
   return (
     <div className="flex items-start flex-col">
       {data.map((category) => (
@@ -132,6 +152,34 @@ function TreeView({ data, add, update, remove }) {
           remove={remove}
         />
       ))}
+      {addNew ? (
+        <div className="flex gap-1">
+          <input
+            className="pl-1"
+            type="text"
+            onChange={(e) => setNewCat(e.target.value)}
+            value={newCat}
+          />
+          <FontAwesomeIcon
+            icon={faCheck}
+            className="cursor-pointer scale-90 mx-1"
+            onClick={addNewCategory}
+          />
+          <FontAwesomeIcon
+            icon={faXmark}
+            className="cursor-pointer scale-90 mr-1"
+            onClick={() => setAddNew(false)}
+          />
+        </div>
+      ) : (
+        <div className="flex justify-center mt-2 w-full">
+          <FontAwesomeIcon
+            icon={faPlus}
+            className="cursor-pointer"
+            onClick={() => setAddNew(true)}
+          />
+        </div>
+      )}
     </div>
   );
 }
