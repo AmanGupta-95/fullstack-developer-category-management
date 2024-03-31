@@ -14,6 +14,7 @@ function App() {
     getAllCategories();
   }, []);
 
+  // fetching all the categories in tree structure
   const getAllCategories = () => {
     setIsLoading(true);
     axios
@@ -27,6 +28,7 @@ function App() {
       });
   };
 
+  // adding new category
   const addNewCategory = (name, parentId) => {
     setIsLoading(true);
     axios
@@ -39,6 +41,7 @@ function App() {
       });
   };
 
+  // updating the name of the category
   const updateCategory = (id, name) => {
     setIsLoading(true);
     axios
@@ -51,6 +54,7 @@ function App() {
       });
   };
 
+  // deleting category
   const deleteCategory = (id) => {
     setIsLoading(true);
     axios
@@ -74,7 +78,7 @@ function App() {
       ) : (
         <TreeView
           data={categories}
-          parentId={undefined}
+          isMain={true}
           add={addNewCategory}
           update={updateCategory}
           remove={deleteCategory}

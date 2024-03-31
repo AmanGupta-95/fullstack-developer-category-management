@@ -38,6 +38,7 @@ function Node({ data, add, update, remove }) {
   return (
     <div className="pl-3 mt-2">
       <div className="flex">
+        {/* drop icon if node has children */}
         {data.children.length ? (
           <button className="mr-2" onClick={toggleOpen}>
             <FontAwesomeIcon
@@ -47,6 +48,7 @@ function Node({ data, add, update, remove }) {
             />
           </button>
         ) : null}
+        {/* rendering node name and editable input field*/}
         <div className="flex">
           {isEditable ? (
             <input
@@ -61,6 +63,7 @@ function Node({ data, add, update, remove }) {
             </p>
           )}
           <div className="flex ml-1 gap-1">
+            {/* handling editable icons */}
             {!isEditable ? (
               <FontAwesomeIcon
                 icon={faPen}
@@ -81,11 +84,13 @@ function Node({ data, add, update, remove }) {
                 />
               </>
             )}
+            {/* add new child category*/}
             <FontAwesomeIcon
               icon={faPlus}
               className="scale-75 cursor-pointer"
               onClick={() => setAddNew(true)}
             />
+            {/* deleting a category */}
             <FontAwesomeIcon
               icon={faTrash}
               className="scale-75 cursor-pointer"
@@ -94,6 +99,7 @@ function Node({ data, add, update, remove }) {
           </div>
         </div>
       </div>
+      {/* add new child category UI */}
       {addNew ? (
         <>
           <input
@@ -113,18 +119,12 @@ function Node({ data, add, update, remove }) {
             onClick={() => setAddNew(false)}
           />
         </>
-      ) : // <div className="flex justify-center mt-2">
-      //   <FontAwesomeIcon
-      //     icon={faPlus}
-      //     className="cursor-pointer"
-      //     onClick={() => setAddNew(true)}
-      //   />
-      // </div>
-      null}
+      ) : null}
+      {/* recursive render if category has children */}
       {isOpen && (
         <TreeView
           data={data.children}
-          parentId={data.parentId}
+          isMain={false}
           add={add}
           update={update}
           remove={remove}
@@ -134,15 +134,16 @@ function Node({ data, add, update, remove }) {
   );
 }
 
-function TreeView({ data, parentId, add, update, remove }) {
+function TreeView({ data, isMain, add, update, remove }) {
   const [addNew, setAddNew] = useState(false);
   const [newCat, setNewCat] = useState('');
   const addNewCategory = () => {
-    add(newCat, parentId);
+    add(newCat);
     setAddNew(false);
   };
   return (
     <div className="flex items-start flex-col">
+      {/* Rendering the nodes of the tree */}
       {data.map((category) => (
         <Node
           key={category.id}
@@ -152,32 +153,37 @@ function TreeView({ data, parentId, add, update, remove }) {
           remove={remove}
         />
       ))}
-      {addNew ? (
-        <div className="flex gap-1">
-          <input
-            className="pl-1"
-            type="text"
-            onChange={(e) => setNewCat(e.target.value)}
-            value={newCat}
-          />
-          <FontAwesomeIcon
-            icon={faCheck}
-            className="cursor-pointer scale-90 mx-1"
-            onClick={addNewCategory}
-          />
-          <FontAwesomeIcon
-            icon={faXmark}
-            className="cursor-pointer scale-90 mr-1"
-            onClick={() => setAddNew(false)}
-          />
-        </div>
-      ) : (
-        <div className="flex justify-center mt-2 w-full">
-          <FontAwesomeIcon
-            icon={faPlus}
-            className="cursor-pointer"
-            onClick={() => setAddNew(true)}
-          />
+      {/* UI for adding category at root level */}
+      {isMain && (
+        <div className="w-full">
+          {addNew ? (
+            <div className="flex gap-1">
+              <input
+                className="pl-1"
+                type="text"
+                onChange={(e) => setNewCat(e.target.value)}
+                value={newCat}
+              />
+              <FontAwesomeIcon
+                icon={faCheck}
+                className="cursor-pointer scale-90 mx-1"
+                onClick={addNewCategory}
+              />
+              <FontAwesomeIcon
+                icon={faXmark}
+                className="cursor-pointer scale-90 mr-1"
+                onClick={() => setAddNew(false)}
+              />
+            </div>
+          ) : (
+            <div className="flex justify-center mt-2 w-full">
+              <FontAwesomeIcon
+                icon={faPlus}
+                className="cursor-pointer"
+                onClick={() => setAddNew(true)}
+              />
+            </div>
+          )}
         </div>
       )}
     </div>
